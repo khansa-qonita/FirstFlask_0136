@@ -1,11 +1,16 @@
-from flask import Flask, request, render_template
+from flask import Flask,request,render_template
 from markupsafe import escape
-
-app = Flask(__name__)
-
-@app.route("/")
+app=Flask(__name__)
+@app.route("/", methods=["GET", "POST"])
+def index():
+    nama = None
+    if request.method == "POST":
+        # parsing parameter dari form (method POST)
+        nama = escape(request.form.get("nama", "").strip())
+    return render_template("index.html", nama=nama)
+@app.route("/hello")
 def hello_world():
-    return "<p>Hello, World!</p>"
+    return "<p>Hello, World!</p> <img src='https://itkoding.com/wp-content/uploads/2023/07/gambar-animasi-kartun-768x432.jpg' />"
 
 @app.route("/home")
 def home():
@@ -22,15 +27,6 @@ def profile(name):
 @app.route("/post/<int:post_id>")
 def post(post_id):
     return f"Post #{post_id}"
-
-# Parsing Parameter Method POST
-@app.route("/form", methods=["GET", "POST"])
-def form():
-    if request.method == "POST":
-        nama = request.form["nama"]
-        return f"Hello, {escape(nama)}!"
-
-    return render_template("index.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
